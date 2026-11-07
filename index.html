@@ -1117,5 +1117,48 @@
     applyLanguage(language);
   })();
   </script>
+  <script>
+  (() => {
+    "use strict";
+    const brand = document.querySelector(".brand");
+    let taps = 0;
+    let tapReset;
+    brand?.addEventListener("click", () => {
+      taps += 1;
+      window.clearTimeout(tapReset);
+      tapReset = window.setTimeout(() => { taps = 0; }, 1400);
+      if (taps < 7) return;
+      taps = 0;
+      const polish = document.documentElement.lang === "pl";
+      document.querySelector("[data-i18n='reflectionModalKicker']").textContent = polish ? "UKRYTA STRONA" : "HIDDEN PAGE";
+      document.getElementById("reflectionModalTitle").textContent = polish ? "Znalazłeś mały sekret." : "You found a small detail.";
+      document.getElementById("reflectionModalText").textContent = polish
+        ? "Nie każda część archiwum jest widoczna na pierwszy rzut oka. Ten mały szczegół jest tylko dla odkrywców."
+        : "Not every part of an archive is visible at first glance. This little detail is for curious explorers.";
+      document.getElementById("reflectionModal").classList.add("open");
+      document.body.classList.add("modal-open");
+    });
+
+    const replay = document.getElementById("replayCinema");
+    let burstPlayed = false;
+    replay?.addEventListener("click", () => {
+      if (typeof confetti !== "function") return;
+      const heart = confetti.shapeFromText({ text: "♥", scalar: 1.8 });
+      confetti({ particleCount: 52, spread: 78, startVelocity: 30, origin: { y: .72 }, shapes: [heart], scalar: 1.65 });
+      burstPlayed = true;
+    });
+
+    const ending = document.getElementById("ending");
+    if (ending && "IntersectionObserver" in window) {
+      const endingObserver = new IntersectionObserver((entries, observer) => {
+        if (!entries.some(entry => entry.isIntersecting && entry.intersectionRatio >= .48)) return;
+        observer.disconnect();
+        if (!burstPlayed) replay?.click();
+      }, { threshold: [.48, .6] });
+      endingObserver.observe(ending);
+    }
+  })();
+  </script>
+
 </body>
 </html>
